@@ -14,7 +14,7 @@ extension VideoDetailSystemBackGestureBridge.Controller {
             popGesture.delegate = self
         }
 
-        guard let contentPopGesture = navigationController.interactiveContentPopGestureRecognizer else {
+        guard let contentPopGesture = navigationController.compatInteractiveContentPopGestureRecognizer else {
             return
         }
         if !preservesSystemGestureDelegates {
@@ -44,8 +44,8 @@ extension VideoDetailSystemBackGestureBridge.Controller {
         if navigationController.interactivePopGestureRecognizer?.delegate === self {
             navigationController.interactivePopGestureRecognizer?.delegate = nil
         }
-        if navigationController.interactiveContentPopGestureRecognizer?.delegate === self {
-            navigationController.interactiveContentPopGestureRecognizer?.delegate = nil
+        if navigationController.compatInteractiveContentPopGestureRecognizer?.delegate === self {
+            navigationController.compatInteractiveContentPopGestureRecognizer?.delegate = nil
         }
         attachedNavigationController = nil
         configuredContentPopID = nil

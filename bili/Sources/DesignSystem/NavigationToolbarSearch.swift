@@ -32,7 +32,7 @@ private struct NavigationToolbarSearch: ViewModifier {
                     // Keep the input in this row; reserve space only for existing actions.
                     .frame(width: availableWidth)
                 }
-                .sharedBackgroundVisibility(.hidden)
+                .compatSharedBackgroundVisibility(.hidden)
             }
             .onDisappear { isFocused.wrappedValue = false }
     }

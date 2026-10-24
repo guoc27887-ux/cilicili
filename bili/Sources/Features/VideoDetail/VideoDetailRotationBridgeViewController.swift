@@ -452,7 +452,7 @@ final class VideoDetailRotationBridgeViewController: UIViewController {
     private func isSystemBackGesture(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
         guard let navigationController else { return false }
         return gestureRecognizer === navigationController.interactivePopGestureRecognizer
-            || gestureRecognizer === navigationController.interactiveContentPopGestureRecognizer
+            || gestureRecognizer === navigationController.compatInteractiveContentPopGestureRecognizer
     }
 }
 

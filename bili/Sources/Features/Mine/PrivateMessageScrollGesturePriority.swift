@@ -82,7 +82,7 @@ struct PrivateMessageScrollGesturePriority: UIViewRepresentable {
                         self.navigation = navigation
                     }
                     for gesture in [navigation.interactivePopGestureRecognizer,
-                                    navigation.interactiveContentPopGestureRecognizer].compactMap({ $0 }) {
+                                    navigation.compatInteractiveContentPopGestureRecognizer].compactMap({ $0 }) {
                         guard !observedGestures.contains(where: { $0 === gesture }) else { continue }
                         // An edge pop can succeed even when the full-width pop fails.
                         scrollView.panGestureRecognizer.require(toFail: gesture)

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // iOS 18 compatibility shims for APIs introduced in iOS 26.
 //
@@ -143,6 +144,36 @@ extension View {
                 accessory()
             }
         }
+    }
+}
+
+// MARK: - Toolbar shared background visibility
+
+extension ToolbarContent {
+    /// Equivalent of `sharedBackgroundVisibility(_:)` on iOS 26. Toolbars do
+    /// not share item backgrounds before iOS 26, so this is a no-op on iOS 18.
+    @ToolbarContentBuilder
+    func compatSharedBackgroundVisibility(_ visibility: Visibility) -> some ToolbarContent {
+        if #available(iOS 26, *) {
+            sharedBackgroundVisibility(visibility)
+        } else {
+            self
+        }
+    }
+}
+
+// MARK: - Content pop gesture recognizer
+
+extension UINavigationController {
+    /// Equivalent of `interactiveContentPopGestureRecognizer` on iOS 26.
+    /// The full-width content pop gesture does not exist before iOS 26, so
+    /// this returns nil on iOS 18; callers already treat it as optional,
+    /// exactly like the pre-existing `interactivePopGestureRecognizer` flow.
+    var compatInteractiveContentPopGestureRecognizer: UIGestureRecognizer? {
+        if #available(iOS 26, *) {
+            return interactiveContentPopGestureRecognizer
+        }
+        return nil
     }
 }
 
