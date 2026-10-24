@@ -89,7 +89,7 @@ struct DynamicInlineCommentEmotePicker: View {
                     Image(systemName: "delete.left")
                         .frame(width: 32, height: 32)
                 }
-                .buttonStyle(.glass)
+                .biliGlassButtonStyle()
                 .buttonBorderShape(.circle)
                 .controlSize(.small)
                 .padding(.top, 12)

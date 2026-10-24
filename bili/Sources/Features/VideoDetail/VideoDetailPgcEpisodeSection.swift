@@ -406,7 +406,7 @@ private struct VideoDetailPgcEpisodeSelectionSheet: View {
                     .padding(.horizontal, 14)
                     .padding(.top, 4)
 
-                    GlassEffectContainer(spacing: 10) {
+                    CompatGlassEffectContainer(spacing: 10) {
                         LazyVGrid(columns: columns, spacing: 10) {
                             ForEach(orderedEpisodes) { episode in
                                 VideoDetailPgcEpisodeSheetRoute(
@@ -438,7 +438,7 @@ private struct VideoDetailPgcEpisodeSheetHeader: View {
     @Binding var order: VideoDetailPgcEpisodeOrder
 
     var body: some View {
-        GlassEffectContainer(spacing: 8) {
+        CompatGlassEffectContainer(spacing: 8) {
             HStack(spacing: 10) {
                 Text("全部分集")
                     .font(.headline)

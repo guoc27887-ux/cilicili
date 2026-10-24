@@ -121,7 +121,7 @@ struct DynamicPaidContentBadge: View {
     let content: DynamicPaidContent
 
     var body: some View {
-        GlassEffectContainer(spacing: 8) {
+        CompatGlassEffectContainer(spacing: 8) {
             Label(content.badgeText, systemImage: content.isChargeExclusive ? "bolt.fill" : "sparkles")
                 .font(.caption2.weight(.semibold))
                 .labelStyle(.titleAndIcon)

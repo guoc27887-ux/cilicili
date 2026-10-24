@@ -126,15 +126,24 @@ private struct UITestDynamicDetailFixtureView: View {
                 ],
                 id: \.self
             ) { tab in
-                Tab(tab.title, systemImage: tab.systemImage, value: tab, role: tab == .search ? .search : nil) {
-                    rootTabNavigationStack(
-                        for: tab,
-                        detailPath: navigationPathBinding(for: tab)
-                    )
+                if #available(iOS 26, *) {
+                    Tab(tab.title, systemImage: tab.systemImage, value: tab, role: tab == .search ? .search : nil) {
+                        rootTabNavigationStack(
+                            for: tab,
+                            detailPath: navigationPathBinding(for: tab)
+                        )
+                    }
+                } else {
+                    Tab(tab.title, systemImage: tab.systemImage, value: tab) {
+                        rootTabNavigationStack(
+                            for: tab,
+                            detailPath: navigationPathBinding(for: tab)
+                        )
+                    }
                 }
             }
         }
-        .tabBarMinimizeBehavior(.never)
+        .compatTabBarMinimizeBehavior(false)
         .onChange(of: selectedTab) { _, tab in
             if tab != .search {
                 preservesSearchResultsOnDismissal = true

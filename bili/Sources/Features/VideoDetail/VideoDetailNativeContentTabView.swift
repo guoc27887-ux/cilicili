@@ -522,7 +522,7 @@ struct VideoDetailBottomToolbarModifier: ViewModifier {
                         }
                     }
                     if let onOpenCommentComposer {
-                        ToolbarSpacer(.flexible, placement: .bottomBar)
+                        CompatFlexibleToolbarSpacer(placement: .bottomBar)
                         ToolbarItem(placement: .bottomBar) {
                             VideoDetailToolbarSegmentedPickerView(
                                 selection: $selection
@@ -530,7 +530,7 @@ struct VideoDetailBottomToolbarModifier: ViewModifier {
                                 .frame(width: VideoDetailToolbarSegmentedPickerView.toolbarWidth)
                         }
                         .sharedBackgroundVisibility(.hidden)
-                        ToolbarSpacer(.flexible, placement: .bottomBar)
+                        CompatFlexibleToolbarSpacer(placement: .bottomBar)
                         ToolbarItem(placement: .bottomBar) {
                             VideoDetailToolbarCommentAction(onComment: onOpenCommentComposer)
                         }

@@ -67,7 +67,7 @@ private struct UploaderSpaceLibraryContent: View {
                 await model.previewModel.loadFavoriteFolderPreviews(folderIDs: model.folders.map { $0.folder.id })
             }
         }
-        .scrollEdgeEffectStyle(.soft, for: .top)
+        .compatScrollEdgeEffectStyleSoft(for: .top)
         .nativeBottomScrollEdgeBlur()
         .navigationTitle(kind.title)
         .navigationBarTitleDisplayMode(.inline)

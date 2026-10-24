@@ -110,7 +110,7 @@ struct HomeRecommendationFeedbackNoticeView: View {
                     .font(.system(size: 28, weight: .semibold))
                     .frame(width: 32, height: 32)
                     .padding(12)
-                    .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
+                    .compatGlassEffect(in: RoundedRectangle(cornerRadius: 12))
                     .accessibilityLabel(notice.message)
             case .failure(let message):
                 VideoDetailNoticeLabel(message: message, systemImage: "info.circle")

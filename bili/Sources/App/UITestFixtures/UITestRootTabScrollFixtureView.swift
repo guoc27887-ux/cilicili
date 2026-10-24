@@ -74,41 +74,19 @@ struct UITestRootTabScrollFixtureView: View {
     var body: some View {
         TabView(selection: selection) {
             ForEach(AppTab.defaultVisibleTabs) { tab in
-                Tab(value: tab, role: tab == .search ? .search : nil) {
-                    NavigationStack(path: path(for: tab)) {
-                        page(tab)
-                            .environment(\.rootTabScrollRequest, scrollRequests[tab])
-                            .navigationHistoryTitle(tab.title)
-                            .onScrollGeometryChange(for: CGFloat.self) { $0.contentOffset.y + $0.contentInsets.top }
-                                action: { _, value in metrics.offsets[tab] = value }
-                            .navigationTitle(tab.title)
-                            .toolbarTitleDisplayMode(.inline)
-                            .navigationDestination(for: String.self) { _ in
-                                ScrollView { Text("二级页面").frame(height: 1800) }
-                                    .toolbar { Button("返回") { paths[tab]?.removeLast() } }
-                            }
-                            .toolbar {
-                                if tab == .search {
-                                    ToolbarItem(placement: .topBarLeading) {
-                                        Button("输入") { isSearchPresented = true }
-                                            .accessibilityIdentifier("fixture.root.focusSearch")
-                                    }
-                                }
-                                ToolbarItem(placement: .topBarTrailing) {
-                                    Button("详情") { paths[tab, default: NavigationPath()].append("detail") }
-                                        .accessibilityIdentifier("fixture.root.detail")
-                                }
-                            }
-                    }
-                    .coordinatesRootTabBarTransitions(isDetailPresented: !(paths[tab]?.isEmpty ?? true),
-                        onRootTabTap: selectedTab == tab ? { selection.wrappedValue = tab } : nil,
-                        capturesSearchReselection: tab == .search)
-                    .navigationHistoryStack(path: path(for: tab), rootTitle: tab.title)
-                } label: { Label(tab.title, systemImage: tab.systemImage) }
+                if #available(iOS 26, *) {
+                    Tab(value: tab, role: tab == .search ? .search : nil) {
+                        tabContent(for: tab)
+                    } label: { Label(tab.title, systemImage: tab.systemImage) }
+                } else {
+                    Tab(value: tab) {
+                        tabContent(for: tab)
+                    } label: { Label(tab.title, systemImage: tab.systemImage) }
+                }
             }
         }
-        .tabBarMinimizeBehavior(ProcessInfo.processInfo.arguments.contains("--test-minimize") ? .onScrollDown : .never)
-        .tabViewBottomAccessory(isEnabled: (paths[selectedTab]?.isEmpty ?? true) && !searchFocused && (selectedTab == .search || selectedTab == .mine)) {
+        .compatTabBarMinimizeBehavior(ProcessInfo.processInfo.arguments.contains("--test-minimize"))
+        .compatTabViewBottomAccessory(isEnabled: (paths[selectedTab]?.isEmpty ?? true) && !searchFocused && (selectedTab == .search || selectedTab == .mine)) {
             if selectedTab == .search { SearchTabBottomAccessory(store: searchAccessory) }
             else { MineTabBottomSearchAccessory(text: $mineQuery, onActivate: {}) }
         }
@@ -125,6 +103,40 @@ struct UITestRootTabScrollFixtureView: View {
                     .buttonStyle(.bordered)
             }
         }
+    }
+
+
+    @ViewBuilder
+    private func tabContent(for tab: AppTab) -> some View {
+        NavigationStack(path: path(for: tab)) {
+            page(tab)
+                .environment(\.rootTabScrollRequest, scrollRequests[tab])
+                .navigationHistoryTitle(tab.title)
+                .onScrollGeometryChange(for: CGFloat.self) { $0.contentOffset.y + $0.contentInsets.top }
+                    action: { _, value in metrics.offsets[tab] = value }
+                .navigationTitle(tab.title)
+                .toolbarTitleDisplayMode(.inline)
+                .navigationDestination(for: String.self) { _ in
+                    ScrollView { Text("二级页面").frame(height: 1800) }
+                        .toolbar { Button("返回") { paths[tab]?.removeLast() } }
+                }
+                .toolbar {
+                    if tab == .search {
+                        ToolbarItem(placement: .topBarLeading) {
+                            Button("输入") { isSearchPresented = true }
+                                .accessibilityIdentifier("fixture.root.focusSearch")
+                        }
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("详情") { paths[tab, default: NavigationPath()].append("detail") }
+                            .accessibilityIdentifier("fixture.root.detail")
+                    }
+                }
+        }
+        .coordinatesRootTabBarTransitions(isDetailPresented: !(paths[tab]?.isEmpty ?? true),
+            onRootTabTap: selectedTab == tab ? { selection.wrappedValue = tab } : nil,
+            capturesSearchReselection: tab == .search)
+        .navigationHistoryStack(path: path(for: tab), rootTitle: tab.title)
     }
 
     @ViewBuilder private func page(_ tab: AppTab) -> some View {

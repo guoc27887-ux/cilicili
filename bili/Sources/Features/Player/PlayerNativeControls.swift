@@ -16,7 +16,7 @@ struct PlayerNativePlaybackControls: View {
     let actions: PlayerNativePlaybackControlsActions
 
     var body: some View {
-        GlassEffectContainer(spacing: metrics.groupSpacing) {
+        CompatGlassEffectContainer(spacing: metrics.groupSpacing) {
             VStack(spacing: metrics.stackSpacing) {
                 if layout.showsProgress {
                     PlayerNativeProgressSection(

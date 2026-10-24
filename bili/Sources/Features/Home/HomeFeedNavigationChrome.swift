@@ -219,7 +219,7 @@ private struct HomeProfileButtonContent: View {
             }
             .buttonStyle(.plain)
             .frame(width: HomeToolbarLayout.controlHeight, height: HomeToolbarLayout.controlHeight)
-            .glassEffect(.regular.interactive(), in: Circle())
+            .compatGlassEffect(interactive: true, in: Circle())
 
             // Keep unread status outside the menu's animated source control.
             // Dismissing the menu must not fade the ring back in with its label.

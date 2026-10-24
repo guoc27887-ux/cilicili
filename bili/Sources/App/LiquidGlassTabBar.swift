@@ -259,12 +259,20 @@ private struct BiliGlassButtonStyleModifier: ViewModifier {
 
     @ViewBuilder
     func body(content: Content) -> some View {
-        if prominent {
+        if #available(iOS 26, *) {
+            if prominent {
+                content
+                    .buttonStyle(.glassProminent)
+            } else {
+                content
+                    .buttonStyle(.glass)
+            }
+        } else if prominent {
             content
-                .buttonStyle(.glassProminent)
+                .buttonStyle(.borderedProminent)
         } else {
             content
-                .buttonStyle(.glass)
+                .buttonStyle(.bordered)
         }
     }
 }
@@ -274,11 +282,16 @@ private struct BiliGlassButtonStyleModifier: ViewModifier {
 private struct BottomScrollEdgeBlur: ViewModifier {
     let isEnabled: Bool
 
+    @ViewBuilder
     func body(content: Content) -> some View {
-        content.scrollEdgeEffectStyle(
-            isEnabled ? .soft : nil,
-            for: .bottom
-        )
+        if #available(iOS 26, *) {
+            content.scrollEdgeEffectStyle(
+                isEnabled ? .soft : nil,
+                for: .bottom
+            )
+        } else {
+            content
+        }
     }
 }
 
@@ -287,8 +300,13 @@ private struct BottomScrollEdgeBlur: ViewModifier {
 private struct BottomScrollEdgeBlurVisibility: ViewModifier {
     let isHidden: Bool
 
+    @ViewBuilder
     func body(content: Content) -> some View {
-        content.scrollEdgeEffectHidden(isHidden, for: .bottom)
+        if #available(iOS 26, *) {
+            content.scrollEdgeEffectHidden(isHidden, for: .bottom)
+        } else {
+            content
+        }
     }
 }
 
@@ -333,7 +351,7 @@ struct TopScrollEdgeEffect: ViewModifier {
 
     @ViewBuilder
     private func nativeStyledContent(_ content: Content) -> some View {
-        content.scrollEdgeEffectStyle(.soft, for: .top)
+        content.compatScrollEdgeEffectStyleSoft(for: .top)
             .nativeBottomScrollEdgeBlur()
     }
 }
@@ -352,7 +370,7 @@ private struct RootFloatingNavigationTitleModifier<Accessory: View>: ViewModifie
         content
             .environment(\.rootNavigationTitleHidden, $isTitleHidden)
             .hiddenRootNavigationTitle(title)
-            .safeAreaBar(edge: .top, alignment: .leading, spacing: -4) {
+            .compatTopSafeAreaBar(spacing: -4) {
                 RootFloatingNavigationTitle(
                     title: title,
                     isTitleHidden: isTitleHidden,

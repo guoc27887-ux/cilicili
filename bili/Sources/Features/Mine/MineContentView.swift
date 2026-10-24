@@ -64,7 +64,40 @@ struct MineContentView: View {
 struct MineTabBottomSearchAccessory: View {
     @Binding var text: String
     let onActivate: () -> Void
+
+    var body: some View {
+        if #available(iOS 26, *) {
+            MineTabBottomSearchAccessoryPlaced(text: $text, onActivate: onActivate)
+        } else {
+            // The tab view bottom accessory does not exist before iOS 26, so
+            // there is no inline placement to adapt to; use the expanded layout.
+            MineTabBottomSearchAccessoryBody(text: $text, onActivate: onActivate, isInline: false)
+        }
+    }
+}
+
+/// Reads the iOS 26-only `tabViewBottomAccessoryPlacement` environment value.
+/// Kept in its own availability-annotated type so the environment key is
+/// never referenced from code that must compile for iOS 18.
+@available(iOS 26, *)
+private struct MineTabBottomSearchAccessoryPlaced: View {
+    @Binding var text: String
+    let onActivate: () -> Void
     @Environment(\.tabViewBottomAccessoryPlacement) private var placement
+
+    var body: some View {
+        MineTabBottomSearchAccessoryBody(
+            text: $text,
+            onActivate: onActivate,
+            isInline: placement == .inline
+        )
+    }
+}
+
+private struct MineTabBottomSearchAccessoryBody: View {
+    @Binding var text: String
+    let onActivate: () -> Void
+    let isInline: Bool
 
     var body: some View {
         Button(action: onActivate) {
@@ -79,8 +112,8 @@ struct MineTabBottomSearchAccessory: View {
 
                 Spacer(minLength: 0)
             }
-            .frame(maxWidth: .infinity, minHeight: placement == .inline ? 40 : 44)
-            .padding(.horizontal, placement == .inline ? 12 : 16)
+            .frame(maxWidth: .infinity, minHeight: isInline ? 40 : 44)
+            .padding(.horizontal, isInline ? 12 : 16)
             .contentShape(Capsule())
         }
         .buttonStyle(.plain)
@@ -89,7 +122,7 @@ struct MineTabBottomSearchAccessory: View {
 
     private var displayText: String {
         guard text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return text }
-        return placement == .inline ? "搜索" : "搜索我的页功能"
+        return isInline ? "搜索" : "搜索我的页功能"
     }
 }
 

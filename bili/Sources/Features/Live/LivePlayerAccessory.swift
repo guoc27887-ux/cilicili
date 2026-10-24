@@ -153,7 +153,7 @@ struct LivePlayerAccessory: View {
             if usesCompactLayout {
                 LiveCompactSettingsMenu(viewModel: viewModel)
             } else {
-                GlassEffectContainer(spacing: 8) {
+                CompatGlassEffectContainer(spacing: 8) {
                     HStack(spacing: 8) {
                         LiveQualityMenu(viewModel: viewModel)
                         LiveStreamMenu(viewModel: viewModel)

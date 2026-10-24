@@ -26,31 +26,18 @@ struct UITestSearchScrollFixtureView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             ForEach(AppTab.defaultVisibleTabs) { tab in
-                Tab(value: tab, role: tab == .search ? .search : nil) {
-                    if tab == .search {
-                        searchNavigationStack
-                    } else if tab == .mine {
-                        NavigationStack {
-                            Color.clear
-                                .navigationTitle("")
-                                .navigationToolbarSearch(
-                                    text: $mineSearchText,
-                                    isFocused: $isMineSearchFocused,
-                                    prompt: "搜索我的页功能",
-                                    onSubmit: { isMineSearchFocused = false }
-                                )
-                        }
-                    } else {
-                        NavigationStack {
-                            Color.clear.navigationTitle(tab.title)
-                        }
-                    }
-                } label: {
-                    Label(tab.title, systemImage: tab.systemImage)
+                if #available(iOS 26, *) {
+                    Tab(value: tab, role: tab == .search ? .search : nil) {
+                        tabContent(for: tab)
+                    } label: { Label(tab.title, systemImage: tab.systemImage) }
+                } else {
+                    Tab(value: tab) {
+                        tabContent(for: tab)
+                    } label: { Label(tab.title, systemImage: tab.systemImage) }
                 }
             }
         }
-        .tabBarMinimizeBehavior(.onScrollDown)
+        .compatTabBarMinimizeBehavior(true)
         .onChange(of: selectedTab) { _, tab in
             if tab != .search {
                 isSearchFocused = false
@@ -59,6 +46,28 @@ struct UITestSearchScrollFixtureView: View {
         }
     }
 
+
+    @ViewBuilder
+    private func tabContent(for tab: AppTab) -> some View {
+        if tab == .search {
+            searchNavigationStack
+        } else if tab == .mine {
+            NavigationStack {
+                Color.clear
+                    .navigationTitle("")
+                    .navigationToolbarSearch(
+                        text: $mineSearchText,
+                        isFocused: $isMineSearchFocused,
+                        prompt: "搜索我的页功能",
+                        onSubmit: { isMineSearchFocused = false }
+                    )
+            }
+        } else {
+            NavigationStack {
+                Color.clear.navigationTitle(tab.title)
+            }
+        }
+    }
     private var searchNavigationStack: some View {
         NavigationStack(path: $path) {
             SearchContentView(viewModel: viewModel, showsHotSearches: true, accessoryStore: accessoryStore)

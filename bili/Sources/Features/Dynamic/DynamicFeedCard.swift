@@ -314,7 +314,7 @@ private struct DynamicDetailView: View {
         .defersRemoteImageLoadsDuringFastScroll()
         .accessibilityIdentifier("dynamic.detail.scroll")
         .scrollIndicators(.hidden)
-        .scrollEdgeEffectStyle(.soft, for: .top)
+        .compatScrollEdgeEffectStyleSoft(for: .top)
         .nativeBottomScrollEdgeBlur()
         .nativeBottomScrollEdgeBlurVisibility(isHidden: richCommentComposerTarget != nil)
         .onGeometryChange(for: CGFloat.self) { geometry in

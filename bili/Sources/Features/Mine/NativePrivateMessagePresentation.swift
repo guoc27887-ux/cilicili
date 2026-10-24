@@ -79,7 +79,7 @@ struct NativePrivateMessageComposer: View {
     private var baseControlHeight: CGFloat { focus.wrappedValue ? 44 : 48 }
 
     var body: some View {
-        GlassEffectContainer(spacing: 10) {
+        CompatGlassEffectContainer(spacing: 10) {
             inputBar
         }
     }
@@ -100,7 +100,7 @@ struct NativePrivateMessageComposer: View {
             .buttonStyle(.plain)
             .frame(width: baseControlHeight, height: baseControlHeight)
             .foregroundStyle(tint)
-            .glassEffect(.regular.interactive(), in: Circle())
+            .compatGlassEffect(interactive: true, in: Circle())
             .disabled(isBusy)
             .accessibilityLabel("添加附件")
             .accessibilityIdentifier("privateMessage.attachments")
@@ -132,7 +132,7 @@ struct NativePrivateMessageComposer: View {
                 .accessibilityLabel("发送私信")
                 .accessibilityIdentifier("privateMessage.send")
             }
-            .glassEffect(.regular.interactive(), in: RoundedRectangle(cornerRadius: 24))
+            .compatGlassEffect(interactive: true, in: RoundedRectangle(cornerRadius: 24))
             .accessibilityElement(children: .contain)
             .accessibilityIdentifier("privateMessage.inputContainer")
         }
