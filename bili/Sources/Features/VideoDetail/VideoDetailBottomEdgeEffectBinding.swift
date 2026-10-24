@@ -1,6 +1,9 @@
 import UIKit
 
 /// Own only our interaction; leave the system toolbar and scroll geometry intact.
+/// The scroll edge effect APIs exist only on iOS 26; on iOS 18 the owning
+/// scroll view skips the binding entirely (see below).
+@available(iOS 26, *)
 @MainActor
 final class VideoDetailBottomEdgeEffectBinding {
     private var interaction: UIScrollEdgeElementContainerInteraction?
@@ -61,7 +64,18 @@ final class VideoDetailBottomEdgeEffectBinding {
 
 @MainActor
 final class VideoDetailEdgeEffectScrollView: UIScrollView {
-    private let edgeBinding = VideoDetailBottomEdgeEffectBinding()
+    private var edgeBindingStorage: AnyObject?
+
+    @available(iOS 26, *)
+    private var edgeBinding: VideoDetailBottomEdgeEffectBinding {
+        if let existing = edgeBindingStorage as? VideoDetailBottomEdgeEffectBinding {
+            return existing
+        }
+        let binding = VideoDetailBottomEdgeEffectBinding()
+        edgeBindingStorage = binding
+        return binding
+    }
+
     private var bottomEdgeBlurEnabled = false
     private var isActiveContent = false
 
@@ -82,6 +96,8 @@ final class VideoDetailEdgeEffectScrollView: UIScrollView {
     }
 
     private func updateBottomEdgeBinding() {
+        // Scroll edge effects are iOS 26-only; on iOS 18 there is nothing to bind.
+        guard #available(iOS 26, *) else { return }
         guard bottomEdgeBlurEnabled, window != nil else {
             edgeBinding.detach()
             return

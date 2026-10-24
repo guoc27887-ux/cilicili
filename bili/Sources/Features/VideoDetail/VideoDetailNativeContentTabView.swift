@@ -539,12 +539,12 @@ struct VideoDetailBottomToolbarModifier: ViewModifier {
                             )
                                 .frame(width: VideoDetailToolbarSegmentedPickerView.toolbarWidth)
                         }
-                        .sharedBackgroundVisibility(.hidden)
+                        .compatSharedBackgroundVisibility(.hidden)
                         CompatFlexibleToolbarSpacer(placement: .bottomBar)
                         ToolbarItem(placement: .bottomBar) {
                             VideoDetailToolbarCommentAction(onComment: onOpenCommentComposer)
                         }
-                        .sharedBackgroundVisibility(.automatic)
+                        .compatSharedBackgroundVisibility(.automatic)
                     } else {
                         ToolbarItemGroup(placement: .bottomBar) {
                             Spacer(minLength: 0)
@@ -554,7 +554,7 @@ struct VideoDetailBottomToolbarModifier: ViewModifier {
                                 .frame(width: VideoDetailToolbarSegmentedPickerView.toolbarWidth)
                             Spacer(minLength: 0)
                         }
-                        .sharedBackgroundVisibility(.hidden)
+                        .compatSharedBackgroundVisibility(.hidden)
                     }
                 }
                 .toolbarBackground(.automatic, for: .bottomBar)
