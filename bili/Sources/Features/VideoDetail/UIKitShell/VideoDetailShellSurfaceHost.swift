@@ -1252,7 +1252,7 @@ private struct SurfaceOnlyPlayerOverlayRoot: View {
     }
 
     private var fullscreenStatusControls: some View {
-        GlassEffectContainer(spacing: 12) {
+        CompatGlassEffectContainer(spacing: 12) {
             HStack(spacing: 12) {
                 VideoDetailFullscreenClockStatus()
                     .frame(height: controlMetrics.controlHeight)

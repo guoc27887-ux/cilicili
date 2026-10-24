@@ -57,7 +57,7 @@ struct UploaderSpaceContentView: View {
             }
         }
         .toolbar {
-            ToolbarSpacer(.flexible, placement: .bottomBar)
+            CompatFlexibleToolbarSpacer(placement: .bottomBar)
             ToolbarItem(placement: .bottomBar) {
                 Picker("空间内容", selection: $selectedSection) {
                     ForEach(viewModel.spaceSections) { section in
@@ -69,7 +69,7 @@ struct UploaderSpaceContentView: View {
                 .accessibilityIdentifier("uploader.space.sections")
             }
             .sharedBackgroundVisibility(.hidden)
-            ToolbarSpacer(.flexible, placement: .bottomBar)
+            CompatFlexibleToolbarSpacer(placement: .bottomBar)
             ToolbarItem(placement: .topBarTrailing) {
                 ShareLink(item: URL(string: "https://space.bilibili.com/\(owner.mid)")!) {
                     Label("分享个人空间", systemImage: "square.and.arrow.up")
@@ -104,7 +104,7 @@ struct UploaderSpaceContentView: View {
                 .background(.background)
             }
         }
-        .scrollEdgeEffectStyle(.soft, for: .top)
+        .compatScrollEdgeEffectStyleSoft(for: .top)
         .nativeBottomScrollEdgeBlur()
         .onPreferenceChange(UploaderContentWidthPreferenceKey.self) { width in
             let rounded = width.rounded(.down)

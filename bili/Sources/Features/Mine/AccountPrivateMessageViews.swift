@@ -510,7 +510,7 @@ struct AccountPrivateMessageConversationView: View {
             }
             .toolbar {
                 if !showsMessageComposer {
-                    ToolbarSpacer(.flexible, placement: .bottomBar)
+                    CompatFlexibleToolbarSpacer(placement: .bottomBar)
                     ToolbarItem(placement: .bottomBar) {
                         Button {
                             showsMessageComposer = true
@@ -529,7 +529,7 @@ struct AccountPrivateMessageConversationView: View {
                         .accessibilityLabel("发私信")
                         .accessibilityIdentifier("privateMessage.openComposer")
                     }
-                    ToolbarSpacer(.flexible, placement: .bottomBar)
+                    CompatFlexibleToolbarSpacer(placement: .bottomBar)
                 }
             }
             .nativeBottomScrollEdgeBlur()

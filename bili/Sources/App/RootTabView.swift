@@ -171,13 +171,26 @@ struct RootTabView: View {
             } else {
                 TabView(selection: tabSelection) {
                     ForEach(displayedRootTabs) { tab in
-                        Tab(value: tab, role: tab == .search ? .search : nil) {
-                            rootTabNavigationStack(
-                                for: tab,
-                                detailPath: rootNavigationPathBinding(for: tab)
-                            )
-                        } label: {
-                            Label(tab.title, systemImage: tab.systemImage)
+                        if #available(iOS 26, *) {
+                            Tab(value: tab, role: tab == .search ? .search : nil) {
+                                rootTabNavigationStack(
+                                    for: tab,
+                                    detailPath: rootNavigationPathBinding(for: tab)
+                                )
+                            } label: {
+                                Label(tab.title, systemImage: tab.systemImage)
+                            }
+                        } else {
+                            // The dedicated search tab role was introduced in
+                            // iOS 26; on iOS 18 the search tab is a regular tab.
+                            Tab(value: tab) {
+                                rootTabNavigationStack(
+                                    for: tab,
+                                    detailPath: rootNavigationPathBinding(for: tab)
+                                )
+                            } label: {
+                                Label(tab.title, systemImage: tab.systemImage)
+                            }
                         }
                     }
                 }
@@ -185,7 +198,7 @@ struct RootTabView: View {
         }
         .toolbarVisibility(visibleRootTabs.count == 1 ? .hidden : .automatic, for: .tabBar)
         .tint(libraryStore.appTintColor)
-        .tabBarMinimizeBehavior(rootTabBarMinimizeBehavior)
+        .compatTabBarMinimizeBehavior(runtimeSettings.minimizesTabBarOnScroll)
     }
 
     @ViewBuilder
@@ -331,10 +344,6 @@ struct RootTabView: View {
                 rootNavigationTitleHiddenByTab[tab] = isHidden
             }
         )
-    }
-
-    private var rootTabBarMinimizeBehavior: TabBarMinimizeBehavior {
-        return runtimeSettings.minimizesTabBarOnScroll ? .onScrollDown : .never
     }
 
     private func cancelMediaWarmupsIfEnvironmentConstrained() {

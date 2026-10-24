@@ -36,7 +36,7 @@ struct VideoDetailActionStrip: View, Equatable {
                     usesPlainStyle: true
                 )
             } else {
-                GlassEffectContainer(spacing: layout.actionSpacing) {
+                CompatGlassEffectContainer(spacing: layout.actionSpacing) {
                     VideoDetailActionStripButtonRow(
                         model: model,
                         layout: layout,
