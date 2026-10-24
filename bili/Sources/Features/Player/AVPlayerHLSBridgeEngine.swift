@@ -1753,9 +1753,12 @@ final class AVPlayerHLSBridgeEngine: PlayerRenderingEngine {
         // 与 NativeDolbyVideoOverlayRenderer 对齐：HDR 源必须显式申请高动态范围并关闭
         // tone mapping。`.automatic` 在 AVPlayerLayer/控制器上不保证激活 EDR，实测会把
         // HDR10 画面按 SDR 输出（杜比直连层用 .high/.never 所以一直正常）。
-        let preferredRange: AVDisplayDynamicRange = isHDR ? .high : .standard
-        if controller.preferredDisplayDynamicRange != preferredRange {
-            controller.preferredDisplayDynamicRange = preferredRange
+        // preferredDisplayDynamicRange 是 iOS 26 才有的接口，iOS 18 上跳过设置。
+        if #available(iOS 26, *) {
+            let preferredRange: AVDisplayDynamicRange = isHDR ? .high : .standard
+            if controller.preferredDisplayDynamicRange != preferredRange {
+                controller.preferredDisplayDynamicRange = preferredRange
+            }
         }
         let toneMapMode: CALayer.ToneMapMode = isHDR ? .never : .automatic
         if controller.view.layer.toneMapMode != toneMapMode {
@@ -1773,12 +1776,15 @@ final class AVPlayerHLSBridgeEngine: PlayerRenderingEngine {
             policyParts.append("dvPolicy=\(DolbyVisionRenderingPolicy.stored().playablePolicy.rawValue)")
         }
         // 只在取值变化时写入，避免重复触发 CALayer/EDR 合成配置。
-        let preferredRange: CALayer.DynamicRange =
-            isHDR
-            ? (PlaybackDiagnosticsExperiment.constrainedHighHDR ? .constrainedHigh : .high)
-            : .standard
-        if layer.preferredDynamicRange != preferredRange {
-            layer.preferredDynamicRange = preferredRange
+        // preferredDynamicRange 是 iOS 26 才有的接口，iOS 18 上跳过设置。
+        if #available(iOS 26, *) {
+            let preferredRange: CALayer.DynamicRange =
+                isHDR
+                ? (PlaybackDiagnosticsExperiment.constrainedHighHDR ? .constrainedHigh : .high)
+                : .standard
+            if layer.preferredDynamicRange != preferredRange {
+                layer.preferredDynamicRange = preferredRange
+            }
         }
         let toneMapMode: CALayer.ToneMapMode = isHDR ? .never : .automatic
         if layer.toneMapMode != toneMapMode {
@@ -3803,7 +3809,9 @@ private final class NativeDolbyVideoOverlayRenderer {
     }
 
     private func applyDisplayPolicy(to layer: AVPlayerLayer) {
-        layer.preferredDynamicRange = .high
+        if #available(iOS 26, *) {
+            layer.preferredDynamicRange = .high
+        }
         layer.toneMapMode = .never
         displayPolicySummary = "display=high/noToneMap"
     }
