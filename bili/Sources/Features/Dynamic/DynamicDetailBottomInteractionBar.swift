@@ -42,11 +42,11 @@ struct DynamicDetailBottomInteractionBar: ToolbarContent {
         ToolbarItem(placement: .bottomBar) {
             likeButton
         }
-        ToolbarSpacer(.flexible, placement: .bottomBar)
+        CompatFlexibleToolbarSpacer(placement: .bottomBar)
         ToolbarItem(placement: .bottomBar) {
             commentButton
         }
-        ToolbarSpacer(.flexible, placement: .bottomBar)
+        CompatFlexibleToolbarSpacer(placement: .bottomBar)
         ToolbarItem(placement: .bottomBar) {
             shareButton
         }

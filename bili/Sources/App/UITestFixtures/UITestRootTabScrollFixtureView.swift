@@ -79,8 +79,8 @@ struct UITestRootTabScrollFixtureView: View {
 
     var body: some View {
         rootTabs
-            .tabBarMinimizeBehavior(ProcessInfo.processInfo.arguments.contains("--test-minimize") ? .onScrollDown : .never)
-            .tabViewBottomAccessory(isEnabled: showsBottomAccessory) {
+            .compatTabBarMinimizeBehavior(ProcessInfo.processInfo.arguments.contains("--test-minimize"))
+            .compatTabViewBottomAccessory(isEnabled: showsBottomAccessory) {
                 if selectedTab == .search { SearchTabBottomAccessory(store: searchAccessory) }
                 else { MineTabBottomSearchAccessory(text: $mineQuery, onActivate: {}) }
             }
@@ -106,9 +106,15 @@ struct UITestRootTabScrollFixtureView: View {
     private var rootTabs: some View {
         TabView(selection: selection) {
             ForEach(AppTab.defaultVisibleTabs) { tab in
-                Tab(value: tab, role: tab == .search ? .search : nil) {
-                    navigationStack(tab)
-                } label: { Label(tab.title, systemImage: tab.systemImage) }
+                if #available(iOS 26, *) {
+                    Tab(value: tab, role: tab == .search ? .search : nil) {
+                        navigationStack(tab)
+                    } label: { Label(tab.title, systemImage: tab.systemImage) }
+                } else {
+                    Tab(value: tab) {
+                        navigationStack(tab)
+                    } label: { Label(tab.title, systemImage: tab.systemImage) }
+                }
             }
         }
     }
@@ -151,6 +157,7 @@ struct UITestRootTabScrollFixtureView: View {
                 .accessibilityIdentifier("fixture.root.detail")
         }
     }
+
 
     @ViewBuilder private func page(_ tab: AppTab) -> some View {
         switch tab {

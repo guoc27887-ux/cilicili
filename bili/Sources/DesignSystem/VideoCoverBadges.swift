@@ -127,7 +127,7 @@ struct VideoCoverPlayBadge: View {
     var iconSize: CGFloat = 15
 
     var body: some View {
-        GlassEffectContainer(spacing: 8) {
+        CompatGlassEffectContainer(spacing: 8) {
             Image(systemName: "play.fill")
                 .font(.system(size: iconSize, weight: .bold))
                 .videoCoverBadgeForeground(opacity: 0)

@@ -142,7 +142,7 @@ extension DynamicImageCell {
 
 struct LongImageBadge: View {
     var body: some View {
-        GlassEffectContainer(spacing: 8) {
+        CompatGlassEffectContainer(spacing: 8) {
             DynamicImageLongBadgeContent()
         }
     }
@@ -154,7 +154,7 @@ struct DynamicImageBadgeRow: View {
 
     var body: some View {
         if mediaBadgeText != nil || showsLongImage {
-            GlassEffectContainer(spacing: 6) {
+            CompatGlassEffectContainer(spacing: 6) {
                 HStack(spacing: 6) {
                     if let mediaBadgeText {
                         DynamicImageMediaBadge(title: mediaBadgeText)

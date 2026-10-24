@@ -66,7 +66,7 @@ struct HomeTopBar: ToolbarContent {
                     .frame(width: HomeTopBarLayout.controlHeight, height: HomeTopBarLayout.controlHeight)
             }
             .frame(height: HomeTopBarLayout.controlHeight)
-            .glassEffect(.regular.interactive(), in: Capsule())
+            .compatGlassEffect(interactive: true, in: Capsule())
         }
         .sharedBackgroundVisibility(.hidden)
     }

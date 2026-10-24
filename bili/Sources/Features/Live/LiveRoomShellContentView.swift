@@ -631,7 +631,7 @@ private struct LiveRoomPortraitLayoutView: View {
     }
 
     private var bottomActionBar: some View {
-        GlassEffectContainer(spacing: 8) {
+        CompatGlassEffectContainer(spacing: 8) {
             HStack(spacing: 8) {
                 Button(action: onNavigateBack) {
                     bottomActionIcon("chevron.backward")
