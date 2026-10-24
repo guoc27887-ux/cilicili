@@ -120,7 +120,12 @@ struct CompatFlexibleToolbarSpacer: ToolbarContent {
         if #available(iOS 26, *) {
             ToolbarSpacer(.flexible, placement: placement)
         } else {
-            Spacer()
+            // A bare Spacer() no longer satisfies ToolbarContentBuilder in
+            // the iOS 26 SDK; wrapping it in a ToolbarItem keeps the same
+            // flexible-space behavior on iOS 18.
+            ToolbarItem(placement: placement) {
+                Spacer()
+            }
         }
     }
 }
@@ -188,7 +193,7 @@ extension View {
         isEnabled: Bool,
         @ViewBuilder accessory: @escaping () -> Accessory
     ) -> some View {
-        if #available(iOS 26, *) {
+        if #available(iOS 26.1, *) {
             tabViewBottomAccessory(isEnabled: isEnabled) {
                 accessory()
             }
