@@ -14,13 +14,21 @@ final class PlayerHostManager {
 
     /// 在拿到 windowScene 后安装常驻宿主窗口（幂等）。
     func installIfNeeded(in scene: UIWindowScene) {
+        // effectiveGeometry.coordinateSpace 是 iOS 26 才有的窗口几何；
+        // iOS 18 上用场景坐标空间的 bounds，等价于全屏尺寸。
+        let frame: CGRect
+        if #available(iOS 26, *) {
+            frame = scene.effectiveGeometry.coordinateSpace.bounds
+        } else {
+            frame = scene.coordinateSpace.bounds
+        }
         guard window == nil else {
             // 场景变化时同步 frame
-            window?.frame = scene.effectiveGeometry.coordinateSpace.bounds
+            window?.frame = frame
             return
         }
         let w = PlayerHostWindow(windowScene: scene)
-        w.frame = scene.effectiveGeometry.coordinateSpace.bounds
+        w.frame = frame
         w.isHidden = false
         window = w
     }
