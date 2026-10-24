@@ -30,7 +30,7 @@ struct HomeFeedNavigationChrome: ViewModifier {
                         .accessibilityHidden(hidesNavigationChrome)
                         .animation(.smooth(duration: 0.18), value: hidesNavigationChrome)
                 }
-                .sharedBackgroundVisibility(.hidden)
+                .compatSharedBackgroundVisibility(.hidden)
                 ToolbarItem(placement: .topBarLeading) {
                     HomeProfileButton(viewModel: accountMessageViewModel, action: onOpenProfile, onOpenMessages: onOpenAccountMessages)
                         .buttonBorderShape(.circle)
@@ -39,7 +39,7 @@ struct HomeFeedNavigationChrome: ViewModifier {
                         .accessibilityHidden(hidesNavigationChrome)
                         .animation(.smooth(duration: 0.18), value: hidesNavigationChrome)
                 }
-                .sharedBackgroundVisibility(.hidden)
+                .compatSharedBackgroundVisibility(.hidden)
                 ToolbarItem(placement: .topBarTrailing) {
                     Group {
                         if !hidesNavigationChrome {
@@ -74,7 +74,7 @@ struct HomeFeedNavigationChrome: ViewModifier {
                     .accessibilityHidden(hidesNavigationChrome)
                     .animation(.smooth(duration: 0.18), value: hidesNavigationChrome)
                 }
-                .sharedBackgroundVisibility(toolbarItemBackgroundVisibility)
+                .compatSharedBackgroundVisibility(toolbarItemBackgroundVisibility)
             }
             .nativeTopNavigationChrome()
     }

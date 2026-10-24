@@ -99,7 +99,7 @@ struct DynamicContentRoot: View {
                         .accessibilityHidden(hidesNavigationChrome)
                         .animation(reduceMotion ? nil : .smooth(duration: 0.18), value: hidesNavigationChrome)
                 }
-                .sharedBackgroundVisibility(hidesNavigationChrome ? .hidden : .automatic)
+                .compatSharedBackgroundVisibility(hidesNavigationChrome ? .hidden : .automatic)
             }
         }
         .onChange(of: selectedFeed) { _, kind in
