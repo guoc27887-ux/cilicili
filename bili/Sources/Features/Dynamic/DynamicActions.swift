@@ -36,7 +36,7 @@ struct DynamicFeedActionBar: View {
             if usesPlainStyle {
                 actionRow
             } else {
-                GlassEffectContainer(spacing: 8) {
+                CompatGlassEffectContainer(spacing: 8) {
                     actionRow
                 }
             }
