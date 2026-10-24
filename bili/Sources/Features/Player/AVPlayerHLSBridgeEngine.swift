@@ -1783,9 +1783,12 @@ final class AVPlayerHLSBridgeEngine: PlayerRenderingEngine {
         let isHDR = source?.dynamicRange.isHDR == true
         var policyParts = ["target=controller", "hdr=\(isHDR)"]
         // HDR 源显式申请高动态范围并关闭 tone mapping，确保原生 AVPlayerViewController 正确激活 EDR。
-        let preferredRange: AVDisplayDynamicRange = isHDR ? .high : .standard
-        if controller.preferredDisplayDynamicRange != preferredRange {
-            controller.preferredDisplayDynamicRange = preferredRange
+        // preferredDisplayDynamicRange 是 iOS 26 才有的接口，iOS 18 上跳过设置。
+        if #available(iOS 26, *) {
+            let preferredRange: AVDisplayDynamicRange = isHDR ? .high : .standard
+            if controller.preferredDisplayDynamicRange != preferredRange {
+                controller.preferredDisplayDynamicRange = preferredRange
+            }
         }
         let toneMapMode: CALayer.ToneMapMode = isHDR ? .never : .automatic
         if controller.view.layer.toneMapMode != toneMapMode {
@@ -1800,12 +1803,15 @@ final class AVPlayerHLSBridgeEngine: PlayerRenderingEngine {
         let isHDR = source?.dynamicRange.isHDR == true
         var policyParts = ["target=layer", "hdr=\(isHDR)"]
         // 只在取值变化时写入，避免重复触发 CALayer/EDR 合成配置。
-        let preferredRange: CALayer.DynamicRange =
-            isHDR
-            ? (PlaybackDiagnosticsExperiment.constrainedHighHDR ? .constrainedHigh : .high)
-            : .standard
-        if layer.preferredDynamicRange != preferredRange {
-            layer.preferredDynamicRange = preferredRange
+        // preferredDynamicRange 是 iOS 26 才有的接口，iOS 18 上跳过设置。
+        if #available(iOS 26, *) {
+            let preferredRange: CALayer.DynamicRange =
+                isHDR
+                ? (PlaybackDiagnosticsExperiment.constrainedHighHDR ? .constrainedHigh : .high)
+                : .standard
+            if layer.preferredDynamicRange != preferredRange {
+                layer.preferredDynamicRange = preferredRange
+            }
         }
         let toneMapMode: CALayer.ToneMapMode = isHDR ? .never : .automatic
         if layer.toneMapMode != toneMapMode {
