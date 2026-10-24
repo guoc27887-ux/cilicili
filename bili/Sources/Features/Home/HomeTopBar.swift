@@ -39,7 +39,7 @@ struct HomeTopBar: ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
             FeedToolbarTitle(title: selection.title, state: titleState, accessibilityID: "home.feed.title")
         }
-        .sharedBackgroundVisibility(.hidden)
+        .compatSharedBackgroundVisibility(.hidden)
 
         if let liveViewModel {
             ToolbarItem(placement: .topBarTrailing) {
@@ -68,7 +68,7 @@ struct HomeTopBar: ToolbarContent {
             .frame(height: HomeTopBarLayout.controlHeight)
             .compatGlassEffect(interactive: true, in: Capsule())
         }
-        .sharedBackgroundVisibility(.hidden)
+        .compatSharedBackgroundVisibility(.hidden)
     }
 }
 

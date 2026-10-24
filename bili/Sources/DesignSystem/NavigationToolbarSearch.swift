@@ -39,7 +39,7 @@ private struct NavigationToolbarSearch: ViewModifier {
                     .frame(idealWidth: availableWidth, maxWidth: availableWidth)
                     .background(SearchOutsideTapDismissalSource { isEditing = false; isFocused = false })
                 }
-                .sharedBackgroundVisibility(.hidden)
+                .compatSharedBackgroundVisibility(.hidden)
             }
             .onDisappear { isEditing = false; isFocused = false }
     }

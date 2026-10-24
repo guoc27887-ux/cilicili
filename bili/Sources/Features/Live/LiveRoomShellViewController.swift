@@ -734,7 +734,7 @@ final class LiveRoomShellViewController: UIViewController {
             popGesture.delegate = self
         }
 
-        if let contentPopGesture = navigationController.interactiveContentPopGestureRecognizer {
+        if let contentPopGesture = navigationController.compatInteractiveContentPopGestureRecognizer {
             contentPopGesture.isEnabled = true
             contentPopGesture.delegate = self
             prioritizeSystemContentPopGesture(contentPopGesture)
@@ -749,7 +749,7 @@ final class LiveRoomShellViewController: UIViewController {
            gestureRecognizer === popGesture {
             return true
         }
-        if let contentPopGesture = navigationController.interactiveContentPopGestureRecognizer,
+        if let contentPopGesture = navigationController.compatInteractiveContentPopGestureRecognizer,
            gestureRecognizer === contentPopGesture {
             return true
         }
