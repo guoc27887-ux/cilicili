@@ -303,6 +303,16 @@ private struct VideoDetailInteractiveScrollHost<Content: View>: UIViewRepresenta
         private var hasUserScrolled = false
         private var isUpdatingView = false
 
+        // Explicit deinit: the synthesized one crashes the Release optimizer
+        // (swift-frontend, EarlyPerfInliner) under Xcode 26.6. Spelling out
+        // the teardown changes the optimizer's path without changing behavior;
+        // dismantleUIView still performs the actual teardown.
+        deinit {
+            hostingController = nil
+            onScrollOffsetChange = nil
+            onScrollPhaseChange = nil
+        }
+
         fileprivate func update(
             scrollView: UIScrollView,
             tab: VideoDetailContentTab,
