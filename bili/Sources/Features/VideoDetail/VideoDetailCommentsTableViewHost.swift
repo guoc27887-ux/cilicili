@@ -80,7 +80,20 @@ struct VideoDetailCommentsTableViewHost: UIViewRepresentable {
 @MainActor
 final class VideoDetailCommentsTableView: UITableView {
     var onLayout: (() -> Void)?
-    private let bottomEdgeBinding = VideoDetailBottomEdgeEffectBinding()
+    private var edgeBindingStorage: AnyObject?
+
+    /// 底部边缘绑定只在 iOS 26 上存在；用 AnyObject 暂存，避免声明处直接引用
+    /// iOS 26 才有的类型导致部署目标 18.0 下编译失败（与
+    /// VideoDetailEdgeEffectScrollView 同款写法）。
+    @available(iOS 26, *)
+    private var bottomEdgeBinding: VideoDetailBottomEdgeEffectBinding {
+        if let existing = edgeBindingStorage as? VideoDetailBottomEdgeEffectBinding {
+            return existing
+        }
+        let binding = VideoDetailBottomEdgeEffectBinding()
+        edgeBindingStorage = binding
+        return binding
+    }
     private var bottomEdgeEnabled = false
     private var bottomEdgeActive = false
 
@@ -113,6 +126,8 @@ final class VideoDetailCommentsTableView: UITableView {
     }
 
     private func updateBottomEdgeBinding() {
+        // 底部边缘效果是 iOS 26 才有的 API；iOS 18 上没有可绑定的东西，直接返回。
+        guard #available(iOS 26, *) else { return }
         guard bottomEdgeEnabled, window != nil,
               let target = VideoDetailBottomEdgeEffectBinding.toolbarTarget(from: self)
         else {
