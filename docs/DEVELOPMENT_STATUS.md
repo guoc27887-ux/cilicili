@@ -829,7 +829,10 @@
 - 变基后 5 笔兼容提交落在 8a2456e 之上，变基完成时 HEAD `c13488c`（round 1 部署目标与兜底、round 2 shims、round 3 guards、round 4 场景坐标系兜底、round 5 显式 deinit 绕开 Release 编译器崩溃）；修 bug 后 HEAD 为 `6b005ef`。
 - 修复既有 bug：`bili/Sources/DesignSystem/IOS18Compat.swift:30`，`CompatGlassEffectContainer.body` 的 iOS 26 分支调的是它自己而非系统 `GlassEffectContainer`，在 iOS 26 上会无限递归直至栈溢出；iOS 18 走 else 分支，不受影响。该 bug 自 round 1 就存在并随 1.1.2 IPA 发出。本轮只改这一行（提交 `6b005ef`），改成系统原生的 `GlassEffectContainer(spacing:)`。
 - 已核实：工作区干净、无残留冲突标记；6 处部署目标全为 18.0；除 shim 内部外无原生 `GlassEffectContainer`，其余 `.glassEffect(`／`scrollEdgeEffect` 调用均在 `if #available(iOS 26, *)` 内；`preferredDynamicRange`／`preferredDisplayDynamicRange` 读写只在 iOS 26 分支内。
-- 待验证：本地是 Linux，没有 Xcode，无法编译验证；编译验证只能靠本次推送后触发的 GitHub Actions 构建。推送与 1.1.3 未签名 IPA 构建在本轮随后执行，run 与产物结果见 goal 记录；真机安装与 iOS 18／iOS 26 实际表现待用户设备验收。
+- 推送：`git push --force-with-lease origin ios18-compat` 到 fork guoc27887-ux/cilicili，远端 HEAD 到 2d6a0da；随后因首轮构建失败补一笔修复提交 be7a332，快进推送，远端 HEAD 为 be7a332。
+- 构建：工作流 Build unsigned IPA 首轮 run 42613220904 失败（见下）；修复后 run 42613724625 成功，9 分 12 秒，编译与上传均通过。产物核对：1.1.3 / build 150、bundle id cc.bili、最低 iOS 18.0、无签名目录与描述文件，25,017,962 字节，SHA-256 `bf23b602f168b8e1e2430bd692edea079c639fac198159ffc903c40ac174a610`，已保存为 `~/workspace/your_files/cilicili-ios18-1.1.3-unsigned.ipa`。本地是 Linux，没有 Xcode；编译验证即本次 Actions 构建本身。
+- 首轮构建失败原因（run 42613220904，2 分 57 秒）：`VideoDetailCommentsTableViewHost.swift:83/117` 直接引用 `@available(iOS 26, *)` 的 `VideoDetailBottomEdgeEffectBinding`，部署目标 18.0 下 2 处编译错误。这是变基遗漏：round 2 只给 `VideoDetailEdgeEffectScrollView` 的调用点加了 guard，漏了评论表格视图的调用点。修复提交 `be7a332`：把绑定改成 AnyObject 暂存 + `@available(iOS 26, *)` 计算属性，`updateBottomEdgeBinding()` 开头加 `guard #available(iOS 26, *) else { return }`；iOS 26 上行为不变，iOS 18 上跳过边缘效果。
+- 待验证：真机安装与 iOS 18／iOS 26 实际表现待用户设备验收。
 
 ## 2026-11-13 Ibili 播放页布局对比
 
