@@ -27,7 +27,7 @@ struct CompatGlassEffectContainer<Content: View>: View {
 
     var body: some View {
         if #available(iOS 26, *) {
-            CompatGlassEffectContainer(spacing: spacing) {
+            GlassEffectContainer(spacing: spacing) {
                 content()
             }
         } else {
