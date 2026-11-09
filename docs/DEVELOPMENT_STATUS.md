@@ -822,6 +822,15 @@
 - 结论：完整云端 CI 确认本轮 22 个提交零新增失败。云端 UI 矩阵被存量单测失败门禁跳过（非本轮引入）；UI/播放回归此前已本地定向覆盖。启动专项至此收尾，成果已备份。
 - 本地 `main` 与远端同步于 `28614aa`。
 
+## 2026-11-09 iOS 18 兼容分支变基到上游 1.1.3 / 修玻璃容器递归 bug
+
+- 上游 Rone89/cilicili main 从 331c89e（1.1.2，build 57）推进到 8a2456e（1.1.3，build 142–150，137 个文件改动）。fork 分支 `ios18-compat`（部署目标 18.0）在用户授权下手动解决冲突并变基到 8a2456e，备份分支 `backup-ios18-compat-20261109-5d7c227` 保留在旧 HEAD 5d7c227。
+- 冲突解决原则：保留上游 1.1.3 的新布局与样式，把 iOS 18 兼容兜底重新接在新代码上。project.pbxproj 部署目标取我们的 18.0，版本号取上游 1.1.3 / build 150；VideoDetailActionStrip 沿用兼容容器并接上游改名后的 `actionSpacing`；VideoDetailPageMenu 与 VideoDetailPgcEpisodeSection 整段取上游（上游已删除旧分段／分集选择器，相关 glass 调用无处可接）；round 2–3 的 DynamicView、VideoDetailBottomEdgeEffectBinding、AVPlayerHLSBridgeEngine 三处按上游新位置／新 HDR 策略接兼容 guard；上游 1.1.3 新增的一处未加版本保护的 `GlassEffectContainer`（VideoDetailShellSurfaceHost 全屏状态控件）也换成兼容容器。
+- 变基后 5 笔兼容提交落在 8a2456e 之上，变基完成时 HEAD `c13488c`（round 1 部署目标与兜底、round 2 shims、round 3 guards、round 4 场景坐标系兜底、round 5 显式 deinit 绕开 Release 编译器崩溃）；修 bug 后 HEAD 为 `6b005ef`。
+- 修复既有 bug：`bili/Sources/DesignSystem/IOS18Compat.swift:30`，`CompatGlassEffectContainer.body` 的 iOS 26 分支调的是它自己而非系统 `GlassEffectContainer`，在 iOS 26 上会无限递归直至栈溢出；iOS 18 走 else 分支，不受影响。该 bug 自 round 1 就存在并随 1.1.2 IPA 发出。本轮只改这一行（提交 `6b005ef`），改成系统原生的 `GlassEffectContainer(spacing:)`。
+- 已核实：工作区干净、无残留冲突标记；6 处部署目标全为 18.0；除 shim 内部外无原生 `GlassEffectContainer`，其余 `.glassEffect(`／`scrollEdgeEffect` 调用均在 `if #available(iOS 26, *)` 内；`preferredDynamicRange`／`preferredDisplayDynamicRange` 读写只在 iOS 26 分支内。
+- 待验证：本地是 Linux，没有 Xcode，无法编译验证；编译验证只能靠本次推送后触发的 GitHub Actions 构建。推送与 1.1.3 未签名 IPA 构建在本轮随后执行，run 与产物结果见 goal 记录；真机安装与 iOS 18／iOS 26 实际表现待用户设备验收。
+
 ## 2026-11-13 Ibili 播放页布局对比
 
 - 完成源码对照：本地 Ibili `main@3e35331` 与 ccswift `main@1656587`（1.1.4 / Build 159）。核对了竖屏首屏、底部切换、暂停收起和恢复、横屏页面与原生全屏两条路径。
