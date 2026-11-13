@@ -834,6 +834,15 @@
 - 首轮构建失败原因（run 42613220904，2 分 57 秒）：`VideoDetailCommentsTableViewHost.swift:83/117` 直接引用 `@available(iOS 26, *)` 的 `VideoDetailBottomEdgeEffectBinding`，部署目标 18.0 下 2 处编译错误。这是变基遗漏：round 2 只给 `VideoDetailEdgeEffectScrollView` 的调用点加了 guard，漏了评论表格视图的调用点。修复提交 `be7a332`：把绑定改成 AnyObject 暂存 + `@available(iOS 26, *)` 计算属性，`updateBottomEdgeBinding()` 开头加 `guard #available(iOS 26, *) else { return }`；iOS 26 上行为不变，iOS 18 上跳过边缘效果。
 - 待验证：真机安装与 iOS 18／iOS 26 实际表现待用户设备验收。
 
+## 2026-11-13 iOS 18 兼容分支变基到上游 1.1.4 / Build 159
+
+- 上游 Rone89/cilicili main 从 8a2456e（1.1.3，build 150）推进到 1656587（1.1.4，build 151–159，23 个文件改动）。fork 分支 `ios18-compat`（部署目标 18.0）在用户授权下解决冲突并变基到 1656587，备份分支 `backup-ios18-compat-20261113-ed5a979` 保留在旧 HEAD ed5a979。
+- 冲突只有 2 个文件：`bili.xcodeproj/project.pbxproj`（2 处，均在 UITests 目标 Debug/Release 配置）与 `docs/DEVELOPMENT_STATUS.md`（文末双向追加）。pbxproj 按既定原则解决：部署目标取我们的 18.0，版本号取上游 MARKETING_VERSION 1.1.4 / CURRENT_PROJECT_VERSION 159，解决后全量核对为 6 处部署目标全 18.0、6 处版本全 1.1.4/159、无 26.x 残留；docs 冲突双方记录全保留（上游 1.1.4 各节在前，本分支 1.1.3 变基记录接在后面）。
+- 其余兼容提交（round 1–5、GlassEffectContainer 递归修复、评论表视图 guard、docs 记录）全部重放成功；上游本轮改动的 `AVPlayerHLSBridgeEngine.swift`、`VideoDetailShellSurfaceHost.swift` 自动合并干净，复查确认 shim 之外无原生 `GlassEffectContainer` 调用，其余 `.glassEffect(`／`scrollEdgeEffect` 调用仍在 `if #available(iOS 26, *)` 内，AVPlayerHLSBridgeEngine 的 iOS 26 guard 标记保留。
+- 变基后 HEAD 为 `593142e`，已强推 fork `ios18-compat`（ed5a979 → 593142e）；触发 Build unsigned IPA 工作流 run 43419730822 成功（13m55s）。
+- 未签名 IPA 已核对包内 Info.plist：bundle id `cc.bili`、版本 1.1.4、build 159、MinimumOSVersion 18.0；大小 25038726 字节，SHA-256 `21e3432ef4694428161280394b39e69169211e6d90a55a825931f762d72e2c5f`。
+- 待验证：本地是 Linux，没有 Xcode，编译验证靠上述云端构建（已成功）；真机安装与 iOS 18／iOS 26 实际表现待用户设备验收。
+
 ## 2026-11-13 Ibili 播放页布局对比
 
 - 完成源码对照：本地 Ibili `main@3e35331` 与 ccswift `main@1656587`（1.1.4 / Build 159）。核对了竖屏首屏、底部切换、暂停收起和恢复、横屏页面与原生全屏两条路径。
