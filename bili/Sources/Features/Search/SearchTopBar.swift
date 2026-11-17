@@ -16,10 +16,10 @@ struct SearchTopBar: ToolbarContent {
                     state: titleState
                 )
             }
-            .sharedBackgroundVisibility(.hidden)
+            .compatSharedBackgroundVisibility(.hidden)
         }
 
-        DefaultToolbarItem(kind: .search, placement: .topBarTrailing)
+        CompatSearchDefaultToolbarItem(placement: .topBarTrailing)
 
         if isRootTabContent, let viewModel {
             ToolbarItem(placement: .topBarTrailing) {

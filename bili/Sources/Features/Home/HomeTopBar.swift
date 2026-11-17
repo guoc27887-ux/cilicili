@@ -49,7 +49,7 @@ struct HomeTopBar: ToolbarContent {
                     Task { await liveViewModel.refresh() }
                 }
             }
-            ToolbarSpacer(.fixed, placement: .topBarTrailing)
+            CompatFixedToolbarSpacer(placement: .topBarTrailing)
         }
 
         ToolbarItem(placement: .topBarTrailing) {

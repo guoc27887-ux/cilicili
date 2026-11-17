@@ -139,7 +139,7 @@ struct RootMorphSearchTopBar<CompactAccessory: View, ExpandedAccessory: View>: V
             ? (controlHeight + closeButtonSpacing)
             : (showsHiddenPageSwitcher && rootHiddenPageSwitcher != nil ? (controlHeight + closeButtonSpacing) : 0)
 
-        GlassEffectContainer(spacing: 10) {
+        CompatGlassEffectContainer(spacing: 10) {
             ZStack(alignment: .trailing) {
                 ZStack(alignment: .trailing) {
                     if isSearching {
@@ -181,15 +181,15 @@ struct RootMorphSearchTopBar<CompactAccessory: View, ExpandedAccessory: View>: V
                 .frame(width: searchBarWidth, height: controlHeight, alignment: .trailing)
                 .clipShape(Capsule())
                 .contentShape(Capsule())
-                .glassEffect(.regular.interactive(), in: Capsule())
-                .glassEffectID("searchControl", in: morphNamespace)
+                .compatGlassEffect(interactive: true, in: Capsule())
+                .compatGlassEffectID("searchControl", in: morphNamespace)
                 .padding(.trailing, trailingReserve)
 
                 if isSearching {
                     expandedTrailingAccessory(AnyView(closeSearchButton))
                         .frame(width: controlHeight, height: controlHeight)
-                        .glassEffect(.regular.interactive(), in: Circle())
-                        .glassEffectID(configuration.trailingExpandedGlassID, in: morphNamespace)
+                        .compatGlassEffect(interactive: true, in: Circle())
+                        .compatGlassEffectID(configuration.trailingExpandedGlassID, in: morphNamespace)
                         .transition(
                             .asymmetric(
                                 insertion: .opacity.animation(.easeIn(duration: 0.16).delay(0.05))
@@ -201,8 +201,8 @@ struct RootMorphSearchTopBar<CompactAccessory: View, ExpandedAccessory: View>: V
                 } else if showsHiddenPageSwitcher, let rootHiddenPageSwitcher {
                     RootHiddenPageSwitcherButton(switcher: rootHiddenPageSwitcher)
                         .frame(width: controlHeight, height: controlHeight)
-                        .glassEffect(.regular.interactive(), in: Circle())
-                        .glassEffectID("hiddenPageSwitcher", in: morphNamespace)
+                        .compatGlassEffect(interactive: true, in: Circle())
+                        .compatGlassEffectID("hiddenPageSwitcher", in: morphNamespace)
                         .transition(
                             .asymmetric(
                                 insertion: .opacity.animation(.easeIn(duration: 0.15).delay(0.14))
@@ -414,7 +414,7 @@ private struct MinimizedToolbarSearchModifier: ViewModifier {
                 placement: .toolbar,
                 prompt: prompt
             )
-            .searchToolbarBehavior(.minimize)
+            .compatSearchToolbarMinimizeBehavior()
             .searchPresentationToolbarBehavior(.automatic)
             .searchFocused(isSearchFocused)
             .onAppear {

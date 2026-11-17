@@ -18,7 +18,7 @@ struct LiveView: View {
             ToolbarItem(placement: .topBarLeading) {
                 FeedToolbarTitle(title: AppTab.live.title, state: titleState, accessibilityID: "live.feed.title")
             }
-            .sharedBackgroundVisibility(.hidden)
+            .compatSharedBackgroundVisibility(.hidden)
 
             ToolbarItem(placement: .topBarTrailing) {
                 LiveRefreshToolbarButton(isLoading: isLoading, onRefresh: refresh)

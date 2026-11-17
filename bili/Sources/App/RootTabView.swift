@@ -242,7 +242,7 @@ struct RootTabView: View {
                 .toolbarTitleDisplayMode(.inline)
                 .toolbar {
                     if showsPageSwitcher && ![.search, .mine].contains(tab) {
-                        ToolbarSpacer(.fixed, placement: .topBarTrailing)
+                        CompatFixedToolbarSpacer(placement: .topBarTrailing)
                         ToolbarItem(placement: .topBarTrailing) {
                             Menu("切换页面", systemImage: "line.3.horizontal.decrease") {
                                 ForEach([AppTab.home] + hiddenRootPages) { page in

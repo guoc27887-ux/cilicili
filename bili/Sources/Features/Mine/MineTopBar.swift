@@ -15,10 +15,10 @@ struct MineTopBar: ToolbarContent {
                     state: titleState
                 )
             }
-            .sharedBackgroundVisibility(.hidden)
+            .compatSharedBackgroundVisibility(.hidden)
         }
 
-        DefaultToolbarItem(kind: .search, placement: .topBarTrailing)
+        CompatSearchDefaultToolbarItem(placement: .topBarTrailing)
 
         if isRootTabContent, let rootHiddenPageSwitcher {
             ToolbarItem(placement: .topBarTrailing) {

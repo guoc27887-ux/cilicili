@@ -59,7 +59,7 @@ private struct DynamicFeedKindMenu: View {
     var body: some View {
         DynamicFeedKindMenuButton(kinds: kinds, current: current, onSelect: onSelect)
             .frame(height: DynamicTopBarLayout.controlHeight)
-            .glassEffect(.regular.interactive(), in: Capsule())
+            .compatGlassEffect(interactive: true, in: Capsule())
     }
 }
 

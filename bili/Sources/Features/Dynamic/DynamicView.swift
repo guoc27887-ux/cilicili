@@ -107,7 +107,7 @@ struct DynamicContentRoot: View {
                 ToolbarItem(placement: .topBarLeading) {
                     DynamicTopBarTitle(state: titleState)
                 }
-                .sharedBackgroundVisibility(.hidden)
+                .compatSharedBackgroundVisibility(.hidden)
             }
             if usesRootNavigationToolbar && visibleFeedKinds.count > 1 {
                 ToolbarItem(placement: .topBarTrailing) {

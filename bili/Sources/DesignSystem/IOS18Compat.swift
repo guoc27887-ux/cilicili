@@ -69,6 +69,36 @@ extension View {
     }
 }
 
+extension View {
+    /// Equivalent of `glassEffectID(_:in:)` on iOS 26. Glass morph identities
+    /// do not exist before iOS 26, so this is a no-op on iOS 18; the paired
+    /// `compatGlassEffect` still provides the material background there, only
+    /// the morph animation between identities is lost.
+    @ViewBuilder
+    func compatGlassEffectID(
+        _ id: some Hashable & Sendable,
+        in namespace: Namespace.ID
+    ) -> some View {
+        if #available(iOS 26, *) {
+            glassEffectID(id, in: namespace)
+        } else {
+            self
+        }
+    }
+
+    /// Equivalent of `searchToolbarBehavior(.minimize)` on iOS 26. Search
+    /// fields cannot minimize into a toolbar button before iOS 26, so this
+    /// is a no-op on iOS 18 and the field keeps its standard presentation.
+    @ViewBuilder
+    func compatSearchToolbarMinimizeBehavior() -> some View {
+        if #available(iOS 26, *) {
+            searchToolbarBehavior(.minimize)
+        } else {
+            self
+        }
+    }
+}
+
 // MARK: - Scroll edge effects
 
 extension View {
@@ -126,6 +156,41 @@ struct CompatFlexibleToolbarSpacer: ToolbarContent {
             ToolbarItem(placement: placement) {
                 Spacer()
             }
+        }
+    }
+}
+
+/// Equivalent of `ToolbarSpacer(.fixed, placement:)` on iOS 26. Before
+/// iOS 26 toolbars applied their standard item spacing automatically, so a
+/// fixed-width clear spacer inside a ToolbarItem is the closest fallback.
+struct CompatFixedToolbarSpacer: ToolbarContent {
+    let placement: ToolbarItemPlacement
+
+    var body: some ToolbarContent {
+        if #available(iOS 26, *) {
+            ToolbarSpacer(.fixed, placement: placement)
+        } else {
+            ToolbarItem(placement: placement) {
+                Color.clear
+                    .frame(width: 8, height: 1)
+                    .accessibilityHidden(true)
+            }
+        }
+    }
+}
+
+// MARK: - Default search toolbar item
+
+/// Equivalent of `DefaultToolbarItem(kind: .search, placement:)` on iOS 26.
+/// Before iOS 26 the toolbar placement of `searchable` surfaces the search
+/// field automatically, so no explicit item is needed on iOS 18.
+struct CompatSearchDefaultToolbarItem: ToolbarContent {
+    let placement: ToolbarItemPlacement
+
+    @ToolbarContentBuilder
+    var body: some ToolbarContent {
+        if #available(iOS 26, *) {
+            DefaultToolbarItem(kind: .search, placement: placement)
         }
     }
 }
