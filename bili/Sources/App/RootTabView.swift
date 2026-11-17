@@ -353,8 +353,6 @@ struct RootTabView: View {
         }
     }
 
-    }
-
     private func cancelMediaWarmupsIfEnvironmentConstrained() {
         let environment = PlaybackEnvironment.current
         guard environment.shouldPreferConservativePlayback || environment.isThermallyElevated else { return }
