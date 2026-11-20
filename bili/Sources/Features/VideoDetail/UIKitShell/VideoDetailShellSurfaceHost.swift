@@ -786,9 +786,20 @@ final class VideoDetailShellSurfaceHost: UIView {
     }
 
     private static func makeNativeControlsGlassGroup() -> NativeControlsGlassGroup {
-        let containerEffect = UIGlassContainerEffect()
-        containerEffect.spacing = 8
-        let containerView = UIVisualEffectView(effect: containerEffect)
+        // UIGlassContainerEffect 是 iOS 26 才有的接口：iOS 26 上用玻璃容器把
+        // 子控件的玻璃背景合并成一组；iOS 18 上容器本身不加效果（透明），
+        // 子控件各自走毛玻璃回退（见 wrapInNativeMediaGlass）。
+        let containerEffect: UIVisualEffect?
+        let containerView: UIVisualEffectView
+        if #available(iOS 26, *) {
+            let glassContainerEffect = UIGlassContainerEffect()
+            glassContainerEffect.spacing = 8
+            containerEffect = glassContainerEffect
+            containerView = UIVisualEffectView(effect: glassContainerEffect)
+        } else {
+            containerEffect = nil
+            containerView = UIVisualEffectView(effect: nil)
+        }
         containerView.translatesAutoresizingMaskIntoConstraints = false
         containerView.overrideUserInterfaceStyle = .dark
         containerView.accessibilityIdentifier = "ui.player.nativeControlsGroup"
@@ -840,13 +851,24 @@ final class VideoDetailShellSurfaceHost: UIView {
     }
 
     private static func wrapInNativeMediaGlass(_ child: UIView) -> UIVisualEffectView {
-        let glassEffect = UIGlassEffect(style: .regular)
-        glassEffect.isInteractive = true
-        glassEffect.tintColor = UIColor.black.withAlphaComponent(0.26)
-        let glassView = UIVisualEffectView(effect: glassEffect)
+        // UIGlassEffect 与 UIView.cornerConfiguration 是 iOS 26 才有的接口：
+        // iOS 26 上用玻璃效果 + 胶囊圆角；iOS 18 上回退到深色毛玻璃，并用
+        // 等高圆角裁剪出同样的胶囊形（见 NativeMediaCapsuleBlurView）。
+        let glassView: UIVisualEffectView
+        if #available(iOS 26, *) {
+            let glassEffect = UIGlassEffect(style: .regular)
+            glassEffect.isInteractive = true
+            glassEffect.tintColor = UIColor.black.withAlphaComponent(0.26)
+            let effectView = UIVisualEffectView(effect: glassEffect)
+            effectView.cornerConfiguration = .capsule()
+            glassView = effectView
+        } else {
+            let blurView = NativeMediaCapsuleBlurView(effect: UIBlurEffect(style: .dark))
+            blurView.backgroundColor = UIColor.black.withAlphaComponent(0.26)
+            glassView = blurView
+        }
         glassView.translatesAutoresizingMaskIntoConstraints = false
         glassView.overrideUserInterfaceStyle = .dark
-        glassView.cornerConfiguration = .capsule()
         child.translatesAutoresizingMaskIntoConstraints = false
         glassView.contentView.addSubview(child)
         NSLayoutConstraint.activate([
@@ -856,6 +878,25 @@ final class VideoDetailShellSurfaceHost: UIView {
             child.bottomAnchor.constraint(equalTo: glassView.contentView.bottomAnchor),
         ])
         return glassView
+    }
+
+    /// iOS 18 回退用的胶囊毛玻璃容器：布局变化时把圆角同步为高度的一半，
+    /// 等价于 iOS 26 的 `cornerConfiguration = .capsule()`。
+    private final class NativeMediaCapsuleBlurView: UIVisualEffectView {
+        override init(effect: UIVisualEffect?) {
+            super.init(effect: effect)
+            clipsToBounds = true
+            layer.cornerCurve = .continuous
+        }
+
+        required init?(coder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
+        }
+
+        override func layoutSubviews() {
+            super.layoutSubviews()
+            layer.cornerRadius = bounds.height / 2
+        }
     }
 
     private static func makeNativeQualityButton() -> UIButton {
@@ -956,7 +997,9 @@ final class VideoDetailShellSurfaceHost: UIView {
 
     private struct NativeControlsGlassGroup {
         let containerView: UIVisualEffectView
-        let containerEffect: UIGlassContainerEffect
+        // iOS 26 上是 UIGlassContainerEffect；iOS 18 回退时容器不加效果，为 nil。
+        // 类型放宽为 UIVisualEffect?，避免在结构体定义处引用 iOS 26 专属类型。
+        let containerEffect: UIVisualEffect?
         let stackView: UIStackView
         let qualityButton: UIButton
         let optionsButton: UIButton
@@ -969,7 +1012,11 @@ final class VideoDetailShellSurfaceHost: UIView {
             self.isFullScreen = isFullScreen
             let platterHeight: CGFloat = isFullScreen ? 44 : 38
             let spacing: CGFloat = isFullScreen ? 10 : 8
-            containerEffect.spacing = spacing
+            // spacing 只存在于 iOS 26 的 UIGlassContainerEffect 上；iOS 18 回退
+            // 容器没有这个属性，子控件间距由 stackView.spacing 单独承担。
+            if #available(iOS 26, *) {
+                (containerEffect as? UIGlassContainerEffect)?.spacing = spacing
+            }
             stackView.spacing = spacing
             qualityHeightConstraint.constant = platterHeight
             optionsWidthConstraint.constant = platterHeight
