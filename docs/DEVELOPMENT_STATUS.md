@@ -2937,3 +2937,14 @@
   - 对比 `v1.1.6`（`18976de`）整理完成 `1.1.7` GitHub Release 更新说明，覆盖应用内画中画体验与稳定性修复、原生专栏阅读页（含整卡直达、底部点赞/评论/分享栏及右上角作者头像独立容器）、视频三分手势控制，以及未签名 IPA 固定 Bundle ID（`com.rayc.cilicili`）。
 - **已验证**：
   - `git diff --check`：通过（exit 0）。
+## 2026-11-20 iOS 18 兼容 round 7：原生播放控件 Liquid Glass 守卫与 1.1.6 未签名 IPA
+
+- 背景：ios18-compat 变基到上游 1.1.6（`1e8cd61`，HEAD `f9c1935`）后首次构建 run 44731112351 真编译失败（非 runner 容量问题，约 2.5 分钟进入编译即挂）：`VideoDetailShellSurfaceHost.swift` 4 处错误，均为上游 `8ef7091` 新引入的 iOS 26 专属 Liquid Glass API 无守卫——775 行 `UIGlassContainerEffect`、829 行 `UIGlassEffect`、835 行 `cornerConfiguration`、945 行结构体属性类型引用 `UIGlassContainerEffect`。
+- round 7 提交 `32465ee`（仅改 `VideoDetailShellSurfaceHost.swift`，+57/−10）：
+  - `makeNativeControlsGlassGroup`：`UIGlassContainerEffect` 只在 `#available(iOS 26, *)` 内创建并设置 `spacing = 8`；iOS 18 容器效果为 nil（透明），子控件各自走回退。
+  - `wrapInNativeMediaGlass`：iOS 26 保持 `UIGlassEffect(.regular)` + `isInteractive` + 黑 0.26 tint + `cornerConfiguration = .capsule()`；iOS 18 回退为 `UIBlurEffect(style: .dark)` + 同色 tint 背景，新增私有类 `NativeMediaCapsuleBlurView` 在 `layoutSubviews` 把 `layer.cornerRadius` 同步为高度一半（continuous 曲线 + clipsToBounds），等价胶囊形。
+  - `NativeControlsGlassGroup.containerEffect` 存储类型由 `UIGlassContainerEffect` 放宽为 `UIVisualEffect?`（iOS 18 为 nil），结构体定义不再引用 iOS 26 专属类型；`applyMetrics` 里 `spacing` 赋值包进 `#available(iOS 26, *)` 并经 `as? UIGlassContainerEffect` 安全转型，iOS 18 间距由 `stackView.spacing` 单独承担。
+  - 全仓静态复查：`UIGlass`/`cornerConfiguration` 其余命中均为注释或已在 `#available` 守卫内；SwiftUI 侧 `.glassEffect`、`.buttonStyle(.glass)`、`scrollEdgeEffectStyle` 均经 LiquidGlassTabBar 的已守卫 modifier，`UIScrollEdgeElementContainerInteraction`、`tabViewBottomAccessoryPlacement` 等在 `@available(iOS 26, *)` 类型/垫片内，无其他无守卫 iOS 26 符号。本机为 Linux 无 Xcode，静态核验之外以云端构建为准。
+- 构建：推送 `32465ee` 后触发 Build unsigned IPA run 44732034739，成功（11m27s，runner 立即分配，非容量失败）。
+- 未签名 IPA 已核对包内 Info.plist：bundle id `cc.bili`、版本 1.1.6、build 218、MinimumOSVersion 18.0，无 `_CodeSignature` 与 embedded.mobileprovision；大小 25198634 字节，SHA-256 `a2cd4733a1f1c0a71ef9db91f8344c6dd0c818c6e4172f486847dcbf07d5326d`，存于目标 files 目录 `cilicili-ios18-1.1.6-unsigned.ipa`。
+- 待验证：真机安装与 iOS 18 上原生控件毛玻璃回退的实际观感、iOS 26 玻璃效果回归，待用户设备验收。
