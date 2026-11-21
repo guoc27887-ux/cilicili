@@ -2948,3 +2948,14 @@
 - 构建：推送 `32465ee` 后触发 Build unsigned IPA run 44732034739，成功（11m27s，runner 立即分配，非容量失败）。
 - 未签名 IPA 已核对包内 Info.plist：bundle id `cc.bili`、版本 1.1.6、build 218、MinimumOSVersion 18.0，无 `_CodeSignature` 与 embedded.mobileprovision；大小 25198634 字节，SHA-256 `a2cd4733a1f1c0a71ef9db91f8344c6dd0c818c6e4172f486847dcbf07d5326d`，存于目标 files 目录 `cilicili-ios18-1.1.6-unsigned.ipa`。
 - 待验证：真机安装与 iOS 18 上原生控件毛玻璃回退的实际观感、iOS 26 玻璃效果回归，待用户设备验收。
+## 2026-11-21 iOS 18 兼容 round 8：文章阅读器 iOS 26 API 守卫、未签名 IPA Bundle ID 与 1.1.7 未签名 IPA
+
+- 背景：ios18-compat 变基到上游 1.1.7（`66fcff2`，变基后 HEAD `a951f3b`）后首次构建 run 44902357412 真编译失败：上游新增原生文章阅读器 `ArticleDetailView.swift` 有 3 处 iOS 26 专属 API 无守卫，在部署目标 18.0 下不可用——232 行 `.scrollEdgeEffectStyle(.soft, for: .top)`、773/777 行 `ToolbarSpacer(.flexible, placement: .bottomBar)`。
+- round 8 提交 `126c191`（仅改 `ArticleDetailView.swift`，+3/−3）：三处调用点换用既有 IOS18Compat 垫片，与 `DynamicDetailBottomInteractionBar`、信息流卡片的既有打法一致，修饰链顺序不变：
+  - `.scrollEdgeEffectStyle(.soft, for: .top)` → `.compatScrollEdgeEffectStyleSoft(for: .top)`（iOS 26 行为不变；iOS 18 无滚动边缘效果，直接透传）。
+  - `ToolbarSpacer(.flexible, placement: .bottomBar)` 两处 → `CompatFlexibleToolbarSpacer(placement: .bottomBar)`（iOS 18 回退为 ToolbarItem 包裹的 `Spacer()`）。
+  - 全仓复查：无其他无守卫的 `ToolbarSpacer(`/`.scrollEdgeEffectStyle(` 调用点（LiquidGlassTabBar 内的命中已在 `#available(iOS 26, *)` 守卫内）。
+- Bundle ID 修正提交 `99078f1`（仅改 `Scripts/build-release-unsigned-ipa.sh`，+1/−1）：上游 1.1.7 将未签名 IPA 的 Bundle ID 固定为 `com.rayc.cilicili`（脚本默认值覆盖工程的 `cc.bili`），run 44902849671 构建成功但产物 bundle id 与本 fork 历次交付（1.1.3–1.1.6 均为 `cc.bili`）及用户侧载签名预期不一致；将 fork 的脚本默认值改回 `cc.bili`，`UNSIGNED_IPA_BUNDLE_IDENTIFIER` 环境变量仍可覆盖。
+- 构建：推送 `99078f1` 后触发 Build unsigned IPA run 44903711311，成功（约 9 分钟，runner 正常分配，非容量失败）。
+- 未签名 IPA 已核对包内 Info.plist：bundle id `cc.bili`、版本 1.1.7、build 230、MinimumOSVersion 18.0，无 `_CodeSignature` 与 embedded.mobileprovision；大小 25491383 字节，SHA-256 `4af9c87c48a74d19c70c7ea796c6269536088d6d0bd57399d82e17beded5aa4b`，存于目标 files 目录 `cilicili-ios18-1.1.7-unsigned.ipa`。
+- 待验证：真机安装与 iOS 18 上文章阅读器底部栏间距回退、顶部无滚动边缘效果的实际观感，待用户设备验收。
