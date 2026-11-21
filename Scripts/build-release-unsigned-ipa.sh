@@ -13,7 +13,7 @@ EXPORT_DIR="$ROOT_DIR/build/release-unsigned-ipa"
 LOG_DIR="$ROOT_DIR/build/logs"
 LOG_PATH="$LOG_DIR/release-unsigned-ipa.log"
 IPA_PATH="$EXPORT_DIR/bili-release-unsigned.ipa"
-BUNDLE_IDENTIFIER="${UNSIGNED_IPA_BUNDLE_IDENTIFIER:-com.rayc.cilicili}"
+BUNDLE_IDENTIFIER="${UNSIGNED_IPA_BUNDLE_IDENTIFIER:-cc.bili}"
 
 mkdir -p "$EXPORT_DIR" "$LOG_DIR"
 
