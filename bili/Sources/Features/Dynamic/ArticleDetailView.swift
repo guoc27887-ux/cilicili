@@ -229,7 +229,7 @@ private struct ArticleDetailView: View {
         }
         .defersRemoteImageLoadsDuringFastScroll()
         .scrollIndicators(.hidden)
-        .scrollEdgeEffectStyle(.soft, for: .top)
+        .compatScrollEdgeEffectStyleSoft(for: .top)
         .nativeBottomScrollEdgeBlur()
         .nativeBottomScrollEdgeBlurVisibility(isHidden: richCommentComposerTarget != nil)
         .background(Color(.systemBackground))
@@ -770,11 +770,11 @@ private struct ArticleDetailBottomInteractionBar: ToolbarContent {
         ToolbarItem(placement: .bottomBar) {
             likeButton
         }
-        ToolbarSpacer(.flexible, placement: .bottomBar)
+        CompatFlexibleToolbarSpacer(placement: .bottomBar)
         ToolbarItem(placement: .bottomBar) {
             commentButton
         }
-        ToolbarSpacer(.flexible, placement: .bottomBar)
+        CompatFlexibleToolbarSpacer(placement: .bottomBar)
         ToolbarItem(placement: .bottomBar) {
             shareButton
         }
